@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">PhotoBlog</string>
+    <string name="app_name">Blog</string>
+    <string name="email_hint">Add Your Email Here</string>
+    <string name="pass_hint">Password</string>
+    <string name="login_btn_text">Login</string>
+    <string name="login_reg_btn_text">Need an Account?</string>
+    <string name="login_logo_desc">Logo Login Page</string>
 </resources>
