@@ -9,7 +9,7 @@
 
 
     <ImageView
-        android:id="@+id/regPageLogo"
+        android:id="@+id/loginPageLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -22,7 +22,7 @@
         app:srcCompat="@drawable/login_page_logo" />
 
     <EditText
-        android:id="@+id/reg_email"
+        android:id="@+id/login_email_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -38,10 +38,10 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/regPageLogo" />
+        app:layout_constraintTop_toBottomOf="@+id/loginPageLogo" />
 
     <EditText
-        android:id="@+id/reg_confirm_pass"
+        android:id="@+id/login_pass_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -57,7 +57,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reg_email" />
+        app:layout_constraintTop_toBottomOf="@+id/login_email_text" />
 
     <Button
         android:id="@+id/login_btn"
@@ -75,7 +75,7 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reg_confirm_pass" />
+        app:layout_constraintTop_toBottomOf="@+id/login_pass_text" />
 
     <Button
         android:id="@+id/login_reg_btn"
@@ -99,7 +99,7 @@
         android:id="@+id/login_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="12dp"
         android:indeterminate="true"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
