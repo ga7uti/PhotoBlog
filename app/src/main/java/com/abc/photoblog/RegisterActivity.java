@@ -42,9 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
                 String email=regEmail.getText().toString();
                 String pass=regPass.getText().toString();
                 String confpass=regConfirmPass.getText().toString();
-                regProgressBar.setVisibility(View.VISIBLE);
+
                 if(!TextUtils.isEmpty(email) && !TextUtils.isEmpty(pass) && !TextUtils.isEmpty(confpass)){
                     if(pass.equals(confpass)){
+                        regProgressBar.setVisibility(View.VISIBLE);
                         firebaseAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -53,13 +54,14 @@ public class RegisterActivity extends AppCompatActivity {
                                 }else {
                                     Toast.makeText(RegisterActivity.this,"Error :"+task.getException().getMessage(),Toast.LENGTH_SHORT).show();
                                 }
+                                regProgressBar.setVisibility(View.INVISIBLE);
 
                             }
                         });
                     }else {
                         Toast.makeText(RegisterActivity.this,"Password doesnot match",Toast.LENGTH_SHORT).show();
                     }
-                    regProgressBar.setVisibility(View.INVISIBLE);
+
                 }
 
             }
