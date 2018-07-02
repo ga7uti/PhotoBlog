@@ -32,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

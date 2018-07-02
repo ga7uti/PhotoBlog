@@ -8,4 +8,6 @@
     <string name="menu_search">Search</string>
     <string name="menu_account_settings">Account Settings</string>
     <string name="menu_logout">Logout</string>
+    <string name="reg_logo_desc">Register Logo Page</string>
+    <string name="reg_confirm_pass_text">Confirm Password</string>
 </resources>

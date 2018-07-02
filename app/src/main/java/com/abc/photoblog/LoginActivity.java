@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,13 +28,21 @@ private ProgressBar loginProgress;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginEmailText=findViewById(R.id.login_email_text);
-        loginPassText=findViewById(R.id.login_pass_text);
+        loginEmailText=findViewById(R.id.reg_email_text);
+        loginPassText=findViewById(R.id.reg_pass_text);
         loginBtn=findViewById(R.id.login_btn);
         loginCreateUserBtn=findViewById(R.id.login_reg_btn);
         loginProgress=findViewById(R.id.login_progress);
 
         firebaseAuth=FirebaseAuth.getInstance();
+
+        loginCreateUserBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);
+                startActivity(intent);
+            }
+        });
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +71,7 @@ private ProgressBar loginProgress;
     private void switchActvity() {
         Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override
