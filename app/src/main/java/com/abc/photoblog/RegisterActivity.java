@@ -50,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(task.isSuccessful()){
-                                    switchToMain();
+                                    switchToActivity(1);
                                 }else {
                                     Toast.makeText(RegisterActivity.this,"Error :"+task.getException().getMessage(),Toast.LENGTH_SHORT).show();
                                 }
@@ -66,6 +66,12 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
+        previousUserBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
 
     }
@@ -74,14 +80,22 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onStart() {
         FirebaseUser user=firebaseAuth.getCurrentUser();
         if(user!=null) {
-            switchToMain();
+            switchToActivity(0);
         }
         super.onStart();
     }
 
-    private void switchToMain() {
-        Intent intent=new Intent(RegisterActivity.this,MainActivity.class);
-        startActivity(intent);
-        finish();
+    private void switchToActivity(int i) {
+        switch (i){
+
+            case 0:
+                startActivity(new Intent(RegisterActivity.this,MainActivity.class));
+                break;
+
+            case 1:
+                startActivity(new Intent(RegisterActivity.this,AccountSetupActivity.class));
+
+        }
+
     }
 }

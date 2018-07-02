@@ -39,7 +39,7 @@ private ProgressBar loginProgress;
         loginCreateUserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);
+                Intent intent=new Intent(LoginActivity.this,AccountSetupActivity.class);
                 startActivity(intent);
             }
         });
@@ -81,5 +81,11 @@ private ProgressBar loginProgress;
         if(user!=null){
             switchActvity();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 }

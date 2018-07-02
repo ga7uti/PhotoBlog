@@ -87,7 +87,7 @@
         android:backgroundTint="@android:color/white"
         android:paddingBottom="20dp"
         android:paddingTop="20dp"
-        android:text="@string/login_reg_btn_text"
+        android:text="@string/already_have_account"
         android:textAllCaps="false"
         android:textColor="@color/colorAccent"
         android:textSize="18sp"
