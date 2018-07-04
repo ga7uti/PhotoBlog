@@ -11,4 +11,6 @@
     <string name="reg_logo_desc">Register Logo Page</string>
     <string name="reg_confirm_pass_text">Confirm Password</string>
     <string name="already_have_account">Already have Account?</string>
+    <string name="add_name_text">Name</string>
+    <string name="save_profile_button">Save Profile</string>
 </resources>

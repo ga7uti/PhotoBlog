@@ -54,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
                 logout();
                 return true;
 
+            case R.id.menu_account_setting:
+                Intent intent=new Intent(MainActivity.this,AccountSetupActivity.class);
+                startActivity(intent);
+                return true;
+
 
                 default:
                 return false;
