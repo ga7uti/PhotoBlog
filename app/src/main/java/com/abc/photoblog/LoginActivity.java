@@ -50,25 +50,28 @@ private ProgressBar loginProgress;
                 String email=loginEmailText.getText().toString();
                 String password=loginPassText.getText().toString();
                 loginProgress.setVisibility(View.VISIBLE);
-
-                firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            switchActvity();
-                        }else {
-                            Toast.makeText(LoginActivity.this, "Error : "+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                        loginProgress.setVisibility(View.INVISIBLE);
-                    }
-                });
+                loginUser(email,password);
             }
         });
 
 
     }
 
-    private void switchActvity() {
+    private void loginUser(String email, String password) {
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()){
+                    switchActivity();
+                }else {
+                    Toast.makeText(LoginActivity.this, "Error : "+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                loginProgress.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    private void switchActivity() {
         Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
         finish();
@@ -79,7 +82,7 @@ private ProgressBar loginProgress;
         super.onStart();
         FirebaseUser user=firebaseAuth.getCurrentUser();
         if(user!=null){
-            switchActvity();
+            switchActivity();
         }
     }
 

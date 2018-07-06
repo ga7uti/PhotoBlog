@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -29,6 +30,9 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class AccountSetupActivity extends AppCompatActivity {
@@ -40,6 +44,8 @@ public class AccountSetupActivity extends AppCompatActivity {
     private Button saveProfile;
     private StorageReference mStorageRef;
     private ProgressBar setupProgress;
+    private FirebaseFirestore firebaseFirestore;
+    private String user_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,28 +61,48 @@ public class AccountSetupActivity extends AppCompatActivity {
         saveProfile=findViewById(R.id.save_profile_btn);
 
         firebaseAuth=FirebaseAuth.getInstance();
+        user_id=firebaseAuth.getCurrentUser().getUid();
+        firebaseFirestore=FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         setupProgress=findViewById(R.id.setupProgress);
 
         saveProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String user_name=getName.getText().toString();
+                final String user_name=getName.getText().toString();
                 if(!TextUtils.isEmpty(user_name) && profileImage!=null){
                     setupProgress.setVisibility(View.VISIBLE);
-                    String user_id=firebaseAuth.getCurrentUser().getUid();
+                    final String user_id=firebaseAuth.getCurrentUser().getUid();
                     StorageReference imagePath=mStorageRef.child("profile_image").child(user_id+".jpg");
                     imagePath.putFile(profileImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                             if(task.isSuccessful()){
+                                setupProgress.setVisibility(View.VISIBLE);
                                 Uri download_uri=task.getResult().getDownloadUrl();
-                                Toast.makeText(AccountSetupActivity.this,"Image Uploaded",Toast.LENGTH_LONG).show();
+                                Map<String,String> userName=new HashMap<>();
+                                userName.put("name",user_name);
+                                userName.put("image",download_uri.toString());
+                                firebaseFirestore.collection("Users").document(user_id).set(userName).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            Toast.makeText(AccountSetupActivity.this, "The user Settings are updated.", Toast.LENGTH_LONG).show();
+                                            Intent mainIntent = new Intent(AccountSetupActivity.this, MainActivity.class);
+                                            startActivity(mainIntent);
+                                            finish();
+
+                                        }else{
+                                            Toast.makeText(AccountSetupActivity.this,"Error: "+task.getException().getMessage(),Toast.LENGTH_LONG).show();
+                                            setupProgress.setVisibility(View.VISIBLE);
+                                        }
+                                    }
+                                });
 
                             }else {
                                 Toast.makeText(AccountSetupActivity.this,"Error: "+task.getException().getMessage(),Toast.LENGTH_LONG).show();
                             }
-                            setupProgress.setVisibility(View.INVISIBLE);
+                            setupProgress.setVisibility(View.VISIBLE);
                         }
                     });
                 }
@@ -92,12 +118,11 @@ public class AccountSetupActivity extends AppCompatActivity {
                         Toast.makeText(AccountSetupActivity.this,"Permission Denied",Toast.LENGTH_SHORT).show();
                         ActivityCompat.requestPermissions(AccountSetupActivity.this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
                     }else {
-                        CropImage.activity()
-                                .setGuidelines(CropImageView.Guidelines.ON)
-                                .setAspectRatio(1,1)
-                                .start(AccountSetupActivity.this);
+                        cropImage();
 
                     }
+                }else{
+                    cropImage();
                 }
             }
         });
@@ -105,6 +130,13 @@ public class AccountSetupActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void cropImage() {
+        CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1,1)
+                .start(AccountSetupActivity.this);
     }
 
     @Override
