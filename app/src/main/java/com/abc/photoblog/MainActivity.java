@@ -1,18 +1,26 @@
 package com.abc.photoblog;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore firebaseFirestore;
+    private String currentUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,16 +28,33 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         firebaseAuth=FirebaseAuth.getInstance();
+        firebaseFirestore=FirebaseFirestore.getInstance();
     }
 
     @Override
     protected void onStart() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            switchActivity();
-            finish();
-        }
         super.onStart();
+        FirebaseUser currentUser =firebaseAuth.getCurrentUser();
+        if (currentUser == null) {
+            switchActivity();
+        }else{
+            currentUserID=firebaseAuth.getCurrentUser().getUid();
+            firebaseFirestore.collection("Users").document(currentUserID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        if(!task.getResult().exists()){
+                            Intent intent=new Intent(MainActivity.this,AccountSetupActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }else {
+                        Toast.makeText(MainActivity.this,"Error : "+task.getException().getMessage(), Toast.LENGTH_LONG).show();;
+                    }
+                }
+            });
+        }
+
     }
 
     @Override
