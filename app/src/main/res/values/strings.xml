@@ -13,4 +13,6 @@
     <string name="already_have_account">Already have Account?</string>
     <string name="add_name_text">Name</string>
     <string name="save_profile_button">Save Profile</string>
+    <string name="new_post_btn_hint">Add</string>
+    <string name="post_desc_hint">Write Post</string>
 </resources>

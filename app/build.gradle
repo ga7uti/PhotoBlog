@@ -35,6 +35,7 @@ dependencies {
     compile 'com.theartofdev.edmodo:android-image-cropper:2.7.+'
 
 
+    implementation 'com.android.support:design:27.1.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
