@@ -29,6 +29,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/post_placeholder" />
+        app:srcCompat="@drawable/common_full_open_on_phone"
+        android:focusable="true" />
 
 </android.support.constraint.ConstraintLayout>
