@@ -3,6 +3,7 @@ package com.abc.photoblog;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -48,6 +49,7 @@ public class AccountSetupActivity extends AppCompatActivity {
     private ProgressBar setupProgress;
     private FirebaseFirestore firebaseFirestore;
     private String user_id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
