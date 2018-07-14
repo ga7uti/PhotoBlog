@@ -15,4 +15,10 @@
     <string name="save_profile_button">Save Profile</string>
     <string name="new_post_btn_hint">Add</string>
     <string name="post_desc_hint">Write Post</string>
+    <string name="home_bottom">Home</string>
+    <string name="notification_bottom">Notification</string>
+    <string name="account_bottom">Account</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
