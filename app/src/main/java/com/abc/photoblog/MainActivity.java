@@ -2,7 +2,10 @@ package com.abc.photoblog;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,16 +27,50 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private String currentUserID;
     private FloatingActionButton floatingActionButton;
+    private HomeFragment homeFragment;
+    private NotificationFragment notificationFragment;
+    private AccountFragment accountFragment;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         firebaseAuth=FirebaseAuth.getInstance();
         firebaseFirestore=FirebaseFirestore.getInstance();
 
         floatingActionButton=findViewById(R.id.floatingActionButton);
+
+        homeFragment=new HomeFragment();
+        accountFragment=new AccountFragment();
+        notificationFragment=new NotificationFragment();
+        initializeFragment();
+
+
+        bottomNavigationView=findViewById(R.id.bottomNavigationView2);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment fragment=getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                switch (item.getItemId()){
+                    case R.id.home_bottom_menu:
+                        setFragment(homeFragment,fragment);
+                        return true;
+                    case R.id.notification_bottom_menu:
+                        setFragment(notificationFragment,fragment);
+                        return true;
+                    case R.id.account_bottom:
+                        setFragment(accountFragment,fragment);
+                        return true;
+
+
+                }
+                return false;
+            }
+        });
+
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,6 +78,33 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void setFragment(Fragment fragment,Fragment current) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if(fragment == homeFragment){
+
+            fragmentTransaction.hide(accountFragment);
+            fragmentTransaction.hide(notificationFragment);
+
+        }
+
+        if(fragment == accountFragment){
+
+            fragmentTransaction.hide(homeFragment);
+            fragmentTransaction.hide(notificationFragment);
+
+        }
+
+        if(fragment == notificationFragment){
+
+            fragmentTransaction.hide(homeFragment);
+            fragmentTransaction.hide(accountFragment);
+
+        }
+        fragmentTransaction.show(fragment);
+        fragmentTransaction.commit();
+;
     }
 
     @Override
@@ -66,6 +130,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+    }
+    private void initializeFragment(){
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        fragmentTransaction.add(R.id.fragment_container, homeFragment);
+        fragmentTransaction.add(R.id.fragment_container, notificationFragment);
+        fragmentTransaction.add(R.id.fragment_container, accountFragment);
+
+        fragmentTransaction.hide(notificationFragment);
+        fragmentTransaction.hide(accountFragment);
+
+        fragmentTransaction.commit();
 
     }
 
