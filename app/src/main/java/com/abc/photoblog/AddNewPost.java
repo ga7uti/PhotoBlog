@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -145,9 +146,10 @@ public class AddNewPost extends AppCompatActivity {
                                     map.put("image_url",downloadUri);
                                     map.put("thumb_url",download_thumb_uri);
                                     map.put("desc",desc);
+                                    map.put("timestamp", FieldValue.serverTimestamp());
                                     map.put("user_id",currentUser);
 
-                                    firebaseFirestore.collection("post").add(map).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                    firebaseFirestore.collection("Posts").add(map).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentReference> task) {
 

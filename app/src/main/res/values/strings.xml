@@ -23,4 +23,5 @@
     <string name="home_fragment">Home fragment fragment</string>
     <string name="noti_fragment">Notification fragment</string>
     <string name="acc_fragment">Account fragment</string>
+    <string name="profile_image">ProfileImage</string>
 </resources>
