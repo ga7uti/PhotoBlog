@@ -36,10 +36,12 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class AccountSetupActivity extends AppCompatActivity {
 
-    private CircularImageView circularImageView;
+    private CircleImageView circularImageView;
     private Uri profileImage=null;
     private boolean isChanged=false;
     private FirebaseAuth firebaseAuth;

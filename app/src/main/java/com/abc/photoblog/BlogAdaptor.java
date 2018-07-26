@@ -1,5 +1,6 @@
 package com.abc.photoblog;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,12 +9,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.mikhaellopez.circularimageview.CircularImageView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.util.List;
 
 public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
     private List<BlogPost> blogPostList;
+    private FirebaseFirestore firebaseFirestore;
+    private Context context;
 
     public BlogAdaptor(List<BlogPost> blogPostList) {
         this.blogPostList = blogPostList;
@@ -21,15 +32,43 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.blog_list_view,parent,false);
-        ViewHolder viewHolder=new ViewHolder(v);
-        return viewHolder;
+        View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.blog_list_view,parent,false);
+        firebaseFirestore=FirebaseFirestore.getInstance();
+        context=parent.getContext();
+
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         String descdata=blogPostList.get(position).getDesc();
         holder.setblogdesc(descdata);
+
+        String uid=blogPostList.get(position).getUser_id();
+
+        String current_uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        //get name and user profile image
+        firebaseFirestore.collection("Users").document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()){
+                    String name=task.getResult().getString("name");
+                    String image=task.getResult().getString("image");
+                    holder.setUserData(name,image);
+
+                }
+            }
+        });
+
+        //get blog image
+
+        String blogimage=blogPostList.get(position).getImage_url();
+        String thumbimage=blogPostList.get(position).getThumb_url();
+        holder.setBlogImage(blogimage,thumbimage);
+
+
     }
 
     @Override
@@ -39,7 +78,7 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
 
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        private CircularImageView profileImage;
+        private CircleImageView circleImageView;
         private ImageView blogImage;
         private TextView userName,dateTime,description;
         private View view;
@@ -52,6 +91,28 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
         public void setblogdesc(String blogdesc){
             description=view.findViewById(R.id.blog_desc);
             description.setText(blogdesc);
+        }
+        public void setUserData(String name,String image){
+            userName=view.findViewById(R.id.blog_user_name);
+            circleImageView=view.findViewById(R.id.circle_image);
+
+            userName.setText(name);
+
+            RequestOptions requestOptions=new RequestOptions();
+            requestOptions.placeholder(R.drawable.profile_placeholder);
+            Glide.with(context).applyDefaultRequestOptions(requestOptions).load(image).into(circleImageView);
+
+
+        }
+
+        public void setBlogImage(String image,String thumb){
+
+            blogImage =view.findViewById(R.id.blog_image_view);
+
+            RequestOptions requestOptions=new RequestOptions();
+            requestOptions.placeholder(R.drawable.image_placeholder);
+
+            Glide.with(context).applyDefaultRequestOptions(requestOptions).load(image).thumbnail(Glide.with(context).load(thumb)).into(blogImage);
         }
     }
 

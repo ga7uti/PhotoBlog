@@ -82,7 +82,7 @@ public class AddNewPost extends AppCompatActivity {
             public void onClick(View v) {
                 CropImage.activity()
                         .setGuidelines(CropImageView.Guidelines.ON)
-                        .setAspectRatio(1,1)
+                        .setAspectRatio(2,1)
                         .start(AddNewPost.this);
             }
         });
@@ -122,8 +122,8 @@ public class AddNewPost extends AppCompatActivity {
                             File newThumbFile= new File(postImageUri.getPath());
                             try{
                                 compressImage=new Compressor(AddNewPost.this)
-                                        .setMaxHeight(100)
-                                        .setMaxWidth(100)
+                                        .setMaxHeight(200)
+                                        .setMaxWidth(200)
                                         .setQuality(1)
                                         .compressToBitmap(newThumbFile);
 
