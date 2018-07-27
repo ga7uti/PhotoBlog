@@ -82,7 +82,7 @@ public class AddNewPost extends AppCompatActivity {
             public void onClick(View v) {
                 CropImage.activity()
                         .setGuidelines(CropImageView.Guidelines.ON)
-                        .setAspectRatio(2,1)
+                        .setAspectRatio(1,1)
                         .start(AddNewPost.this);
             }
         });

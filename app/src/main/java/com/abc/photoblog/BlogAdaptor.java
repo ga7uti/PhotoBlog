@@ -3,11 +3,13 @@ package com.abc.photoblog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -19,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import java.util.Date;
 import java.util.List;
 
 public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
@@ -68,6 +71,15 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
         String thumbimage=blogPostList.get(position).getThumb_url();
         holder.setBlogImage(blogimage,thumbimage);
 
+        //get time
+        try {
+            long millisecond = blogPostList.get(position).getTimestamp().getTime();
+            String dateString = DateFormat.format("MM/dd/yyyy",new Date(millisecond)).toString();
+            holder.setDate(dateString);
+        }catch (Exception e){
+            Toast.makeText(context,"Error :"+e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+
 
     }
 
@@ -114,6 +126,12 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
 
             Glide.with(context).applyDefaultRequestOptions(requestOptions).load(image).thumbnail(Glide.with(context).load(thumb)).into(blogImage);
         }
+
+        public  void  setDate(String date){
+            dateTime=view.findViewById(R.id.blog_date_time);
+            dateTime.setText(date);
+        }
+
     }
 
 

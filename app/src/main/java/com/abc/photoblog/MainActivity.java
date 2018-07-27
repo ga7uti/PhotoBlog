@@ -43,41 +43,48 @@ public class MainActivity extends AppCompatActivity {
 
         floatingActionButton=findViewById(R.id.floatingActionButton);
 
-        homeFragment=new HomeFragment();
-        accountFragment=new AccountFragment();
-        notificationFragment=new NotificationFragment();
-        initializeFragment();
+        if(firebaseAuth.getCurrentUser()!=null){
+
+            homeFragment=new HomeFragment();
+            accountFragment=new AccountFragment();
+            notificationFragment=new NotificationFragment();
+            initializeFragment();
 
 
-        bottomNavigationView=findViewById(R.id.bottomNavigationView2);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment fragment=getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                switch (item.getItemId()){
-                    case R.id.home_bottom_menu:
-                        setFragment(homeFragment,fragment);
-                        return true;
-                    case R.id.notification_bottom_menu:
-                        setFragment(notificationFragment,fragment);
-                        return true;
-                    case R.id.account_bottom:
-                        setFragment(accountFragment,fragment);
-                        return true;
 
 
+            bottomNavigationView=findViewById(R.id.bottomNavigationView2);
+            bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Fragment fragment=getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                    switch (item.getItemId()){
+                        case R.id.home_bottom_menu:
+                            setFragment(homeFragment,fragment);
+                            return true;
+                        case R.id.notification_bottom_menu:
+                            setFragment(notificationFragment,fragment);
+                            return true;
+                        case R.id.account_bottom:
+                            setFragment(accountFragment,fragment);
+                            return true;
+
+
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
 
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,AddNewPost.class);
-                startActivity(intent);
-            }
-        });
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent=new Intent(MainActivity.this,AddNewPost.class);
+                    startActivity(intent);
+                }
+            });
+        }
+
+
     }
 
     private void setFragment(Fragment fragment,Fragment current) {

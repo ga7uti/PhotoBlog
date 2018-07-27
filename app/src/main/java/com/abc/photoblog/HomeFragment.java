@@ -2,29 +2,22 @@ package com.abc.photoblog;
 
 
 import android.os.Bundle;
-import android.provider.DocumentsContract;
-import android.support.annotation.NonNull;
+
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryListenOptions;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -37,6 +30,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView blogListView;
     private BlogAdaptor blogAdaptor;
     private FirebaseAuth firebaseAuth;
+    private DocumentSnapshot lastvisible;
 
 
     public HomeFragment() {
@@ -45,11 +39,11 @@ public class HomeFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         View view=inflater.inflate(R.layout.fragment_home, container, false);
-        firebaseFirestore=FirebaseFirestore.getInstance();
+
         firebaseAuth=FirebaseAuth.getInstance();
         blogPostList=new ArrayList<>();
         blogListView=view.findViewById(R.id.blog_list_recycler);
@@ -59,13 +53,29 @@ public class HomeFragment extends Fragment {
 
 
         if(firebaseAuth.getCurrentUser() != null) {
-            firebaseFirestore.collection("Posts").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            firebaseFirestore=FirebaseFirestore.getInstance();
+
+            blogListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    Boolean scrolled=!recyclerView.canScrollVertically(1);
+
+                    if (scrolled){
+
+                        loadMorePost();
+                    }
+                }
+            });
+
+            Query firstquery = firebaseFirestore.collection("Posts").orderBy("timestamp", Query.Direction.DESCENDING).limit(3);
+            firstquery.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
+                    lastvisible = documentSnapshots.getDocuments().get(documentSnapshots.size() -1);
                     for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
                         if (doc.getType() == DocumentChange.Type.ADDED) ;
-
                         BlogPost blogdata = doc.getDocument().toObject(BlogPost.class);
                         blogPostList.add(blogdata);
                         blogAdaptor.notifyDataSetChanged();
@@ -75,6 +85,32 @@ public class HomeFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private void loadMorePost(){
+        if (firebaseAuth.getCurrentUser()!=null){
+
+            Query nextquery = firebaseFirestore.collection("Posts")
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .startAfter(lastvisible)
+                    .limit(3);
+
+            nextquery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                    if (!documentSnapshots.isEmpty()) {
+                        lastvisible = documentSnapshots.getDocuments().get(documentSnapshots.size() - 1);
+                        for (DocumentChange doc : documentSnapshots.getDocumentChanges()) {
+                            if (doc.getType() == DocumentChange.Type.ADDED) ;
+                            BlogPost blogdata = doc.getDocument().toObject(BlogPost.class);
+                            blogPostList.add(blogdata);
+                            blogAdaptor.notifyDataSetChanged();
+                        }
+
+                    }
+                }
+            });
+        }
     }
 
 
