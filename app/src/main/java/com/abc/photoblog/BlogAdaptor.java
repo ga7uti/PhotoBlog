@@ -99,10 +99,13 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
                 firebaseFirestore.collection("Posts/"+blogPostId+"/Likes").document(current_uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()){
+                        if (!task.getResult().exists()){
                             Map<String,Object> likeMap=new HashMap<>();
                             likeMap.put("timestamp", FieldValue.serverTimestamp());
                             firebaseFirestore.collection("Posts/"+blogPostId+"/Likes").document(current_uid).set(likeMap);
+                        }else {
+
+                            firebaseFirestore.collection("Posts/" + blogPostId + "/Likes").document(current_uid).delete();
                         }
                     }
                 });
