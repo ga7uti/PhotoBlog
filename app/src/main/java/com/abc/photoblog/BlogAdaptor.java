@@ -16,13 +16,20 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentListenOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
     private List<BlogPost> blogPostList;
@@ -44,13 +51,14 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-        String descdata=blogPostList.get(position).getDesc();
+        final String descdata=blogPostList.get(position).getDesc();
         holder.setblogdesc(descdata);
 
-        String uid=blogPostList.get(position).getUser_id();
+        final String blogPostId=blogPostList.get(position).BlogPostId;
+        final String current_uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        String current_uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        final String uid=blogPostList.get(position).getUser_id();
         //get name and user profile image
         firebaseFirestore.collection("Users").document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -67,7 +75,7 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
 
         //get blog image
 
-        String blogimage=blogPostList.get(position).getImage_url();
+        final String blogimage=blogPostList.get(position).getImage_url();
         String thumbimage=blogPostList.get(position).getThumb_url();
         holder.setBlogImage(blogimage,thumbimage);
 
@@ -81,6 +89,51 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
         }
 
 
+        //getLikes
+
+        holder.blogLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                firebaseFirestore.collection("Posts/"+blogPostId+"/Likes").document(current_uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()){
+                            Map<String,Object> likeMap=new HashMap<>();
+                            likeMap.put("timestamp", FieldValue.serverTimestamp());
+                            firebaseFirestore.collection("Posts/"+blogPostId+"/Likes").document(current_uid).set(likeMap);
+                        }
+                    }
+                });
+
+            }
+        });
+
+        firebaseFirestore.collection("Posts/"+blogPostId+"/Likes").document(current_uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()){
+                    holder.blogLike.setImageDrawable(context.getDrawable(R.mipmap.ic_fav_clicked));
+                }else {
+                    holder.blogLike.setImageDrawable(context.getDrawable(R.mipmap.ic_fav));
+                }
+            }
+        });
+
+        firebaseFirestore.collection("Posts/"+blogPostId+"/Likes").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                if (!documentSnapshots.isEmpty()){
+
+                    holder.updateCount(documentSnapshots.size());
+                }else {
+                    holder.updateCount(0);
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -91,13 +144,17 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private CircleImageView circleImageView;
-        private ImageView blogImage;
-        private TextView userName,dateTime,description;
+        private ImageView blogImage,blogLike;
+        private TextView userName,dateTime,description,blogCount;
         private View view;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
             view=itemView;
+            blogCount=view.findViewById(R.id.blog_Likes_count);
+            blogLike=view.findViewById(R.id.blog_like_image);
+
         }
 
         public void setblogdesc(String blogdesc){
@@ -131,6 +188,11 @@ public class BlogAdaptor  extends RecyclerView.Adapter<BlogAdaptor.ViewHolder>{
             dateTime=view.findViewById(R.id.blog_date_time);
             dateTime.setText(date);
         }
+
+        public void updateCount(int s){
+            blogCount.setText(s+" Likes");
+        }
+
 
     }
 

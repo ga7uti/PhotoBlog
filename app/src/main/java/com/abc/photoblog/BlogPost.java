@@ -2,7 +2,7 @@ package com.abc.photoblog;
 
 import java.util.Date;
 
-public class BlogPost {
+public class BlogPost extends BlogPostId{
 
     private String user_id,image_url,thumb_url,desc;
     private Date timestamp;
